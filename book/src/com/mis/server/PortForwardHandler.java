@@ -44,7 +44,7 @@ public class PortForwardHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
-        System.out.println("SimpleChatClient:"+incoming.remoteAddress()+"  online");
+        System.out.println("Client:"+incoming.remoteAddress()+"  online");
     }
     
     @Override
