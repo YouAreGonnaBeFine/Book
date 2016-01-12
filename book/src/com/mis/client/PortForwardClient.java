@@ -30,6 +30,7 @@ public class PortForwardClient {
                     .channel(NioSocketChannel.class)
                     .handler(new PortForwardInitializer());
             Channel channel = bootstrap.connect(host, port).sync().channel();
+            System.out.println();
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
             while(true){
                 channel.writeAndFlush(in.readLine() + "\r\n");
