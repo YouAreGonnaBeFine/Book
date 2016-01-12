@@ -15,7 +15,7 @@ public class PortForwardHandler extends SimpleChannelInboundHandler<String> {
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		Channel incoming = ctx.channel();
 		for (Channel channel : channels) {
-			channel.writeAndFlush("[SERVER] - " + incoming.remoteAddress()+ " 加入\n");
+			channel.writeAndFlush("[SERVER] - " + incoming.remoteAddress()+ " join\n");
 		}
 		channels.add(ctx.channel());
 	}
@@ -24,7 +24,7 @@ public class PortForwardHandler extends SimpleChannelInboundHandler<String> {
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
         for (Channel channel : channels) {
-            channel.writeAndFlush("[SERVER] - " + incoming.remoteAddress() + " 离开\n");
+            channel.writeAndFlush("[SERVER] - " + incoming.remoteAddress() + " leave\n");
         }
         channels.remove(ctx.channel());
     }	
@@ -44,19 +44,19 @@ public class PortForwardHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
-        System.out.println("SimpleChatClient:"+incoming.remoteAddress()+"在线");
+        System.out.println("SimpleChatClient:"+incoming.remoteAddress()+"online");
     }
     
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
-        System.out.println("SimpleChatClient:"+incoming.remoteAddress()+"掉线");
+        System.out.println("SimpleChatClient:"+incoming.remoteAddress()+"offline");
     }    
     
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { 
         Channel incoming = ctx.channel();
-        System.out.println("SimpleChatClient:"+incoming.remoteAddress()+"异常");
+        System.out.println("SimpleChatClient:"+incoming.remoteAddress()+"exception");
         // 当出现异常就关闭连接
         cause.printStackTrace();
         ctx.close();

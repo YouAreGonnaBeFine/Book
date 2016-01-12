@@ -11,7 +11,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 public class PortForwardClient {
     public static void main(String[] args) throws Exception{
-        new PortForwardClient("localhost", 8080).run();
+        new PortForwardClient("115.159.152.136", 8080).run();
     }
 
     private final String host;
