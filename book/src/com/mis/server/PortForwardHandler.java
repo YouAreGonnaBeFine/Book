@@ -50,13 +50,13 @@ public class PortForwardHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
-        System.out.println("SimpleChatClient:"+incoming.remoteAddress()+"offline");
+        System.out.println("Client:"+incoming.remoteAddress()+"  offline");
     }    
     
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { 
         Channel incoming = ctx.channel();
-        System.out.println("SimpleChatClient:"+incoming.remoteAddress()+"exception");
+        System.out.println("Client:"+incoming.remoteAddress()+"  exception");
         // 当出现异常就关闭连接
         cause.printStackTrace();
         ctx.close();

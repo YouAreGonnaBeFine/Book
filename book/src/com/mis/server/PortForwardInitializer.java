@@ -19,7 +19,7 @@ public class PortForwardInitializer extends ChannelInitializer<SocketChannel> {
        pipeline.addLast("encoder", new StringEncoder());
        pipeline.addLast("handler", new PortForwardHandler());
 
-       System.out.println("SimpleChatClient:"+ch.remoteAddress() +"connected");		
+       System.out.println("Client:"+ch.remoteAddress() +"  connected");		
 	}
 
 }
