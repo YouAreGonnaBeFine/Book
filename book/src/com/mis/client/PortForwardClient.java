@@ -20,7 +20,7 @@ public class PortForwardClient {
     public PortForwardClient(String host, int port){
         this.host = host;
         this.port = port;
-    }
+    } 
 
     public void run() throws Exception{
         EventLoopGroup group = new NioEventLoopGroup();
