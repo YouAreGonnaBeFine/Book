@@ -1,18 +1,3 @@
-/*
- * Copyright 2013-2018 Lilinfeng.
- *  
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *  
- *      http://www.apache.org/licenses/LICENSE-2.0
- *  
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.phei.netty.protocol.websocket.server;
 
 import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
@@ -21,10 +6,13 @@ import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -36,21 +24,20 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import io.netty.util.CharsetUtil;
+import io.netty.util.concurrent.GlobalEventExecutor;
 
-import java.util.Scanner;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * @author lilinfeng
- * @date 2014年2月14日
- * @version 1.0
- */
 public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> {
-	private static final Logger logger = Logger
-			.getLogger(WebSocketServerHandler.class.getName());
+	
+	private static final Logger logger = Logger.getLogger(WebSocketServerHandler.class.getName());
 
 	private WebSocketServerHandshaker handshaker;
+	
+	public static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, Object msg)
@@ -64,6 +51,11 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 			handleWebSocketFrame(ctx, (WebSocketFrame) msg);
 		}
 	}
+	
+	@Override
+	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+		channels.add(ctx.channel());
+	}	
 
 	@Override
 	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
@@ -83,7 +75,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
 		// 构造握手响应返回，本机测试
 		WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(
-				"ws://localhost:8080/websocket", null, false);
+				"ws://localhost:8081/websocket", null, false);
 		handshaker = wsFactory.newHandshaker(req);
 		if (handshaker == null) {
 			WebSocketServerHandshakerFactory
@@ -119,9 +111,21 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 		if (logger.isLoggable(Level.FINE)) {
 			logger.fine(String.format("%s received %s", ctx.channel(), request));
 		}
+		Date dat = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+		String time = format.format(dat);
+		System.out.println(time+":"+request);
+		Channel incoming = ctx.channel();
+        for (Channel channel : channels) {
+            if (channel != incoming){
+            	channel.writeAndFlush(new TextWebSocketFrame("$Remot:"+request));
+            } else {
+            	channel.writeAndFlush(new TextWebSocketFrame("$Local:"+request));
+            }
+        	
+        }
 		
-		ctx.channel().write(
-				new TextWebSocketFrame(request));
+
 	}
 
 	private static void sendHttpResponse(ChannelHandlerContext ctx,

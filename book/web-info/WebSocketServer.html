@@ -5,7 +5,7 @@
 Netty WebSocket 
 </head>
 <br>
-<body>
+<body>  
 <br>
 <script type="text/javascript">
 var socket;
@@ -14,20 +14,24 @@ if (!window.WebSocket)
 	window.WebSocket = window.MozWebSocket;
 }
 if (window.WebSocket) {
-	socket = new WebSocket("ws://localhost:8080/websocket");
+	socket = new WebSocket("ws://115.159.152.136:8081/websocket");
 	socket.onmessage = function(event) {
 		var ta = document.getElementById('responseText');
-		ta.value="";
-		ta.value = event.data
+		var rq = document.getElementById('requestText');
+		ta.value=ta.value+"\n"+event.data;
+		ta.scrollTop=ta.scrollHeight;
+		rq.value="";
+//		ta.value="";
+//		ta.value = event.data
 	};
 	socket.onopen = function(event) {
 		var ta = document.getElementById('responseText');
-		ta.value = "打开WebSocket服务正常，浏览器支持WebSocket!";
+		ta.value = "$SERVER: 已连接到服务器!";
 	};
 	socket.onclose = function(event) {
 		var ta = document.getElementById('responseText');
 		ta.value = "";
-		ta.value = "WebSocket 关闭!"; 
+		ta.value = "$SERVER: 服务器已关闭!"; 
 	};
 }
 else
@@ -42,17 +46,31 @@ function send(message) {
 	}
 	else
 		{
-		  alert("WebSocket连接没有建立成功!");
+		  alert("服务器连接失败!");
 		}
 }
+
+
+function ch()
+{
+if(event.keyCode==13);
+{
+	
+document.getElementById("sendRquest").click();
+return false;
+}
+}
 </script>
+
 <form onsubmit="return false;">
-<input type="text" name="message" value=""/>
+
 <br><br>
-<input type="button" value="发送" onclick="send(this.form.message.value)"/>
+<textarea id="responseText" style="width:500px;height:300px;"></textarea>
+
 <hr color="blue"/>
 <h3></h3>
-<textarea id="responseText" style="width:500px;height:300px;"></textarea>
+<input type="text" id = "requestText" name="message" value="" style="width: 450px;"/>
+<input type="button" id = "sendRquest" value="发送" onclick="send(this.form.message.value)"/>
 </form>
 </body>
 </html>
